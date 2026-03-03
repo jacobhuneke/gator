@@ -15,7 +15,7 @@ func getConfigFilePath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	dir += "/gatorconfig.json"
+	dir += "/.gatorconfig.json"
 	return dir, nil
 }
 

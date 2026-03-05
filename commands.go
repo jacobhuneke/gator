@@ -2,33 +2,19 @@ package main
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/jacobhuneke/gator/internal/config"
+	"github.com/jacobhuneke/gator/internal/database"
 )
 
 type state struct {
 	cfg *config.Config
+	db  *database.Queries
 }
 
 type command struct {
 	name string
 	args []string
-}
-
-func handlerLogin(s *state, cmd command) error {
-	if len(cmd.args) == 0 {
-		return errors.New("the login handler expects a username argument")
-	}
-
-	err := s.cfg.SetUser(cmd.args[0])
-	if err != nil {
-		return err
-	} else {
-		fmt.Println("The user has been set")
-	}
-
-	return nil
 }
 
 type commands struct {
@@ -38,7 +24,10 @@ type commands struct {
 func (c *commands) run(s *state, cmd command) error {
 	exe, ok := c.funcMap[cmd.name]
 	if ok {
-		exe(s, cmd)
+		err := exe(s, cmd)
+		if err != nil {
+			return err
+		}
 		return nil
 	} else {
 		return errors.New("command is not valid")
@@ -53,4 +42,48 @@ func (c *commands) register(name string, f func(*state, command) error) error {
 		c.funcMap[name] = f
 		return nil
 	}
+}
+
+func registerCommands(cmds commands) error {
+	//registers login, register command
+	e := cmds.register("login", handlerLogin)
+	if e != nil {
+		return e
+	}
+
+	e = cmds.register("register", handlerRegister)
+	if e != nil {
+		return e
+	}
+
+	e = cmds.register("reset", handlerReset)
+	if e != nil {
+		return e
+	}
+
+	e = cmds.register("users", handlerUsers)
+	if e != nil {
+		return e
+	}
+
+	e = cmds.register("agg", handlerAgg)
+	if e != nil {
+		return e
+	}
+
+	e = cmds.register("addfeed", handlerAddfeed)
+	if e != nil {
+		return e
+	}
+
+	e = cmds.register("feeds", handlerFeeds)
+	if e != nil {
+		return e
+	}
+
+	e = cmds.register("follow", handlerFollow)
+	if e != nil {
+		return e
+	}
+	return nil
 }

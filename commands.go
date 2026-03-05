@@ -90,5 +90,10 @@ func registerCommands(cmds commands) error {
 	if e != nil {
 		return e
 	}
+
+	e = cmds.register("unfollow", middlewareLoggedIn(handlerUnfollow))
+	if e != nil {
+		return e
+	}
 	return nil
 }

@@ -85,5 +85,10 @@ func registerCommands(cmds commands) error {
 	if e != nil {
 		return e
 	}
+
+	e = cmds.register("following", handlerFollowing)
+	if e != nil {
+		return e
+	}
 	return nil
 }

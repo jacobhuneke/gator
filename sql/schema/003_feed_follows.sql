@@ -12,7 +12,7 @@ CREATE TABLE feed_follows (
         REFERENCES users(id)
         ON DELETE CASCADE,
     CONSTRAINT fk_feeds_feed_follows
-        FOREIGN KEY (feeds_id)
+        FOREIGN KEY (feed_id)
         REFERENCES feeds(id)
         ON DELETE CASCADE
 );

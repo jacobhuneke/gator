@@ -71,7 +71,7 @@ func registerCommands(cmds commands) error {
 		return e
 	}
 
-	e = cmds.register("addfeed", handlerAddfeed)
+	e = cmds.register("addfeed", middlewareLoggedIn(handlerAddfeed))
 	if e != nil {
 		return e
 	}
@@ -81,12 +81,12 @@ func registerCommands(cmds commands) error {
 		return e
 	}
 
-	e = cmds.register("follow", handlerFollow)
+	e = cmds.register("follow", middlewareLoggedIn(handlerFollow))
 	if e != nil {
 		return e
 	}
 
-	e = cmds.register("following", handlerFollowing)
+	e = cmds.register("following", middlewareLoggedIn(handlerFollowing))
 	if e != nil {
 		return e
 	}

@@ -1,0 +1,8 @@
+# Binaries
+gator
+
+# OS-specific files
+.DS_Store
+
+# Local configuration (contains secrets/local paths)
+.gatorconfig.json

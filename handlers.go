@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jacobhuneke/gator/internal/database"
-	"github.com/jacobhuneke/gator/internal/rss"
 )
 
 func middlewareLoggedIn(handler func(s *state, cmd command, user database.User) error) func(*state, command) error {
@@ -105,13 +105,21 @@ func handlerUsers(s *state, cmd command) error {
 }
 
 func handlerAgg(s *state, cmd command) error {
-	feed, err := rss.FetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
+	if len(cmd.args) == 0 {
+		return fmt.Errorf("must provide time between reqs")
+	}
+
+	dur, err := time.ParseDuration(cmd.args[0])
 	if err != nil {
 		return err
 	}
-	rss.CleanFeed(feed)
-	fmt.Println(feed)
-	return nil
+
+	fmt.Printf("Collecting feeds every %v\n", dur)
+	ticker := time.NewTicker(dur)
+	scrapeFeeds(s)
+	for ; ; <-ticker.C {
+		scrapeFeeds(s)
+	}
 }
 
 func handlerAddfeed(s *state, cmd command, user database.User) error {
@@ -235,6 +243,38 @@ func handlerUnfollow(s *state, cmd command, user database.User) error {
 	e := s.db.DeleteFeedFollow(context.Background(), params)
 	if e != nil {
 		return e
+	}
+
+	return nil
+}
+
+func handlerBrowse(s *state, cmd command, user database.User) error {
+	var limit int32
+	if len(cmd.args) == 1 {
+		l64, err := strconv.ParseInt(cmd.args[0], 10, 32)
+		if err != nil {
+			return err
+		}
+		limit = int32(l64)
+	} else {
+		limit = 2
+	}
+	params := database.GetPostsForUserParams{
+		UserID: user.ID,
+		Limit:  limit,
+	}
+	rows, err := s.db.GetPostsForUser(context.Background(), params)
+	if err != nil {
+		return err
+	}
+
+	for _, row := range rows {
+		fmt.Printf("--- %s ---\n", row.Title)
+		fmt.Printf("Source: %s\n", row.Url)
+		if row.Description != "" {
+			fmt.Printf("Description: %s\n", row.Description)
+		}
+		fmt.Println("-------------------------------------")
 	}
 	return nil
 }

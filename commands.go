@@ -95,5 +95,10 @@ func registerCommands(cmds commands) error {
 	if e != nil {
 		return e
 	}
+
+	e = cmds.register("browse", middlewareLoggedIn(handlerBrowse))
+	if e != nil {
+		return e
+	}
 	return nil
 }

@@ -9,6 +9,8 @@ Welcome to the Gator Feed Aggregator! This is a CLI tool which allows users to:
 
 There are no servers involved besides the one storing the database, this is intended primarily for local use.
 To view a list of commands, type gator help in the terminal. Then you can go from there to conduct all your feed aggregator needs.
+To get started you can use the register command followed by a name to register a new user.
+You can use the addfeed command followed by a name for the feed and it's url to add a feed for the current user.
 
 ## Install libraries
 To run the program, you will need to have go and postgres installed.
@@ -35,16 +37,24 @@ psql --version
 ## Config
 The program looks for a .gatorconfig.json file in the home directory. Create that file now, and store this code in it:
 ```
-{"db_url":"postgres://postgres:postgres@localhost:5432/gator?sslmode=disable","current_user_name":"username"}
+{"db_url":"url","current_user_name":"username"}
 ```
 The username will be overwritten when you run the register command.
-The db_url will be the one for your system.
+The db_url will be the one for your postgres system, and will look like: postgres://username:@localhost:5432/gator.
+If you have a password, it will go after the username: and before the @
+Add the following flags to the end: ?sslmode=disable, making it look like: postgres://username:@localhost:5432/gator?sslmode=disable.
 
 ## Clone
 To clone the repo, enter this into the terminal
 ```bash
 git clone https://github.com/jacobhuneke/gator.git
 cd gator
+```
+
+## Database Migrations
+To create the necessary tables, install [goose](https://github.com/pressly/goose) and run the following command from the `sql/schema` directory:
+```bash
+goose postgres <your_db_url> up
 ```
 
 ## Install Gator

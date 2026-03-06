@@ -278,3 +278,10 @@ func handlerBrowse(s *state, cmd command, user database.User) error {
 	}
 	return nil
 }
+
+func handlerHelp(s *state, cmd command) error {
+	for name, desc := range s.cmds.descMap {
+		fmt.Printf("%s: %s\n", name, desc)
+	}
+	return nil
+}

@@ -36,9 +36,12 @@ func main() {
 	//makes a map of commands
 	cmds := commands{
 		funcMap: make(map[string]func(*state, command) error),
+		descMap: make(map[string]string),
 	}
 
-	e := registerCommands(cmds)
+	s.cmds = &cmds
+
+	e := registerCommands(*s.cmds)
 	if e != nil {
 		fmt.Println(e)
 		os.Exit(1)
